@@ -127,7 +127,7 @@ def dir_comp(
             logging.warning(f"Could not delete '{path}'.\n{e}")
             error_found = True
         else:
-            logging.info(f"'{path}' Deleted.")
+            logging.info(f"Deleted '{path}'.")
 
     # Copy unique items to dest
     for item in src_unique:
