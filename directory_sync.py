@@ -16,6 +16,8 @@ from pathlib import Path
 from sys import exit
 
 
+# Logging Configuration
+
 log_levels = {
     "DEBUG": logging.DEBUG, "INFO": logging.INFO,
     "WARN": logging.WARN, "ERROR": logging.ERROR,
@@ -54,7 +56,7 @@ parser.add_argument(
 )
 
 
-# Function Defs
+# %% Function Defs
 
 """
 Logic:
@@ -161,10 +163,10 @@ def dir_comp(
                 try:
                     shutil.copy2(src_path, dest_path)
                 except PermissionError as e:
-                    logging.warning(f"Could not copy '{path}'.\n{e}")
+                    logging.warning(f"Could not copy '{src_path}'.\n{e}")
                     error_found = True
                 else:
-                    logging.info(f"Copied {path} to {dest}.")
+                    logging.info(f"Copied {src_path} to {dest_path}.")
         elif src_path.is_dir():
             # Add to update list; adding to front of list
             # to iterate through subdirectories.
@@ -199,7 +201,7 @@ if __name__ == '__main__':
         print("\nA path is always synced with itself.")
         exit()
 
-    # Logging Configuration
+    # Log Config
     logging.basicConfig(
         filename=log_name,
         format="%(asctime)s %(levelname)s:%(message)s",
@@ -207,8 +209,8 @@ if __name__ == '__main__':
         level=log_levels[log_lvl],
         encoding="utf-8"
     )
+
     print(f"Writing to file:\n{log_name}\n")
-    
     # Ensure desired directionality
     confirmed = False
     while (not confirmed) and (not skip_confirmation):
