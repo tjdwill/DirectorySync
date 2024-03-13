@@ -14,18 +14,40 @@ import os
 import shutil
 from pathlib import Path
 from sys import exit
-
+
+
+# Logging Configuration
 
 log_levels = {
     "DEBUG": logging.DEBUG, "INFO": logging.INFO,
     "WARN": logging.WARN, "ERROR": logging.ERROR,
-    "FATAL": logging.FATAL
+    "CRIT": logging.CRITICAL
 }
 name_stem = "directory_sync.log"
 log_name = str((Path() / name_stem).resolve())
+log = logging.getLogger('directory_sync')
+log.setLevel(logging.DEBUG)
+
+file_handle = logging.FileHandler(log_name, encoding="utf-8")
+file_handle.setLevel(logging.DEBUG)
+
+main_fmtr = logging.Formatter(
+    fmt="%(asctime)s %(levelname)s:%(message)s",
+    datefmt='%d-%m-%Y %H:%M:%S'
+)
+basic_fmt = logging.Formatter(fmt="%(asctime)s\n%(message)s", datefmt='%d-%m-%Y %H:%M:%S')
+
+file_handle.setFormatter(basic_fmt)
+log.addHandler(file_handle)
 
 # Argument Parsing Config
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+    # prog="DirectorySync",
+    description=(
+        "A script to perform unidirectional synchronization between two "
+        "directories of the same name stored in different places."
+    )
+)
 parser.add_argument(
     "source",
     help="The source path from which files will be copied."
@@ -44,11 +66,11 @@ parser.add_argument(
     action="store_true"
 )
 parser.add_argument(
-    "--log-level", "-ll",
+     "-ll", "--log-level",
     help="Set the log file output level",
     type=str,
     choices=[
-        *["DEBUG", "INFO", "WARN", "ERROR", "FATAL"]
+        *["DEBUG", "INFO", "WARN", "ERROR", "CRIT"]
     ],
     default="WARN",
 )
@@ -122,10 +144,10 @@ def dir_comp(
                 # Remove the file
                 path.unlink()
         except PermissionError as e:
-            logging.warning(f"Could not delete '{path}'.\n{e}")
+            log.warning(f"Could not delete '{path}'.\n{e}")
             error_found = True
         else:
-            logging.info(f"Deleted '{path}'.")
+            log.info(f"Deleted '{path}'.")
 
     # Copy unique items to dest
     for item in src_unique:
@@ -138,10 +160,10 @@ def dir_comp(
                 # Copy the file
                 shutil.copy2(path, dest / item)
         except PermissionError as e:
-            logging.warning(f"Could not copy '{path}'.\n{e}")
+            log.warning(f"Could not copy '{path}'.\n{e}")
             error_found = True
         else:
-            logging.info(f"Copied {path} to {dest}.")
+            log.info(f"Copied {path} to {dest}.")
 
     # Iterate through the items that are in both paths
     for item in shared_items:
@@ -161,10 +183,10 @@ def dir_comp(
                 try:
                     shutil.copy2(src_path, dest_path)
                 except PermissionError as e:
-                    logging.warning(f"Could not copy '{src_path}'.\n{e}")
+                    log.warning(f"Could not copy '{src_path}'.\n{e}")
                     error_found = True
                 else:
-                    logging.info(f"Copied {src_path} to {dest_path}.")
+                    log.info(f"Copied {src_path} to {dest_path}.")
         elif src_path.is_dir():
             # Add to update list; adding to front of list
             # to iterate through subdirectories.
@@ -176,15 +198,17 @@ def dir_comp(
 
 
 if __name__ == '__main__':
+
+    # Parse Command-line
     args = parser.parse_args()
     source_path, dest_path = args.source, args.dest
     log_lvl = args.log_level.upper()
     skip_confirmation = args.skip_confirmation
 
-    src = Path(source_path).resolve()
-    dest = Path(dest_path).resolve()
 
     # Initial Checks
+    src = Path(source_path).resolve()
+    dest = Path(dest_path).resolve()
     if not src.is_dir():
         print(f"[ERROR] Source folder: \"{src}\" is not a valid directory.\n")
         raise OSError
@@ -198,16 +222,8 @@ if __name__ == '__main__':
     if src.resolve() == dest.resolve():
         print("\nA path is always synced with itself.")
         exit()
-
-    # Logging Configuration
-    logging.basicConfig(
-        filename=log_name,
-        format="%(asctime)s %(levelname)s:%(message)s",
-        datefmt='%d-%m-%Y %H:%M:%S',
-        level=log_levels[log_lvl],
-        encoding="utf-8"
-    )
     print(f"Writing to file:\n{log_name}\n")
+
 
     # Ensure desired directionality
     confirmed = False
@@ -222,14 +238,17 @@ if __name__ == '__main__':
             exit()
         else:
             pass
-    logging.info(f"\nDirectory Sync\nFROM: {src}\nTO: {dest}\nBegin.")
+
 
     # Begin Program
+    log.info(f"Directory Sync\nFROM: {src}\nTO: {dest}\nBegin.")
+    file_handle.setFormatter(main_fmtr)
+    file_handle.setLevel(log_levels[log_lvl])
+
+    INFORM_USER = False  # Did an error get written to the log file?
     update_list = [src]
     iter_src = src
     iter_dest = dest
-    INFORM_USER = False
-
     done = False
     while not done:
         print(f'Traversing: "{iter_src}"')
@@ -250,4 +269,7 @@ if __name__ == '__main__':
                 f"Check the log file:\n{log_name}\n"
             )
         print("\nSynchronization Complete.\n")
-        logging.info("\nEnd.\n")
+
+        file_handle.setFormatter(basic_fmt)
+        file_handle.setLevel(logging.DEBUG)
+        log.info("End.\n")
