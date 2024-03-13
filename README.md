@@ -6,7 +6,7 @@ This will delete directories and files that are in `dest` and not in `src`, copy
 `python <path_to_script> <src_directory> <destination_directory> [OPTIONS]`
 ## Options
 * `-y`, `--skip-confirmation`: Skips the user path direction confirmation prompt.
-* `--ll, --log-level`: set the log level
+* `--ll,` `--log-level`: set the log level
   * DEBUG
   * INFO
   * WARN
