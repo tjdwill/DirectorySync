@@ -52,7 +52,7 @@ parser.add_argument(
     choices=[
         *["DEBUG", "INFO", "WARN", "ERROR", "FATAL"]
     ],
-    default="INFO",
+    default="WARN",
 )
 
 
