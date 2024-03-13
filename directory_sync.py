@@ -224,7 +224,7 @@ if __name__ == '__main__':
             exit()
         else:
             pass
-    logging.info(f"\nDirectory Sync\nFROM: {src}\nTO: {dest}\nBegin.\n")
+    logging.info(f"\nDirectory Sync\nFROM: {src}\nTO: {dest}\nBegin.")
 
     # Begin Program
     update_list = [src]
@@ -252,3 +252,4 @@ if __name__ == '__main__':
                 f"Check the log file:\n{log_name}\n"
             )
         print("\nSynchronization Complete.\n")
+        logging.info("\nEnd.\n")
