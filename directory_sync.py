@@ -14,9 +14,7 @@ import os
 import shutil
 from pathlib import Path
 from sys import exit
-
-
-# Logging Configuration
+
 
 log_levels = {
     "DEBUG": logging.DEBUG, "INFO": logging.INFO,
@@ -46,7 +44,7 @@ parser.add_argument(
     action="store_true"
 )
 parser.add_argument(
-    "--log-level", "--ll",
+    "--log-level", "-ll",
     help="Set the log file output level",
     type=str,
     choices=[
@@ -201,16 +199,16 @@ if __name__ == '__main__':
         print("\nA path is always synced with itself.")
         exit()
 
-    # Log Config
+    # Logging Configuration
     logging.basicConfig(
         filename=log_name,
         format="%(asctime)s %(levelname)s:%(message)s",
         datefmt='%d-%m-%Y %H:%M:%S',
         level=log_levels[log_lvl],
         encoding="utf-8"
-    )
-
+    )
     print(f"Writing to file:\n{log_name}\n")
+
     # Ensure desired directionality
     confirmed = False
     while (not confirmed) and (not skip_confirmation):
