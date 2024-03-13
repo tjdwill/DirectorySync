@@ -16,8 +16,6 @@ from pathlib import Path
 from sys import exit
 
 
-# Logging Configuration
-
 log_levels = {
     "DEBUG": logging.DEBUG, "INFO": logging.INFO,
     "WARN": logging.WARN, "ERROR": logging.ERROR,
@@ -56,7 +54,7 @@ parser.add_argument(
 )
 
 
-# %% Function Defs
+# Function Defs
 
 """
 Logic:
@@ -201,7 +199,7 @@ if __name__ == '__main__':
         print("\nA path is always synced with itself.")
         exit()
 
-    # Log Config
+    # Logging Configuration
     logging.basicConfig(
         filename=log_name,
         format="%(asctime)s %(levelname)s:%(message)s",
@@ -209,8 +207,8 @@ if __name__ == '__main__':
         level=log_levels[log_lvl],
         encoding="utf-8"
     )
-
     print(f"Writing to file:\n{log_name}\n")
+    
     # Ensure desired directionality
     confirmed = False
     while (not confirmed) and (not skip_confirmation):
