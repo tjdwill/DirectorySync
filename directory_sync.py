@@ -63,8 +63,8 @@ parser.add_argument(
 )
 parser.add_argument(
     '-m', '--merge',
-    "Keeps files that are unique to `dest` instead of deleting them.",
     default=False, 
+    help="Keeps files that are unique to `dest` instead of deleting them.",
     action="store_true"
 )
 parser.add_argument(
